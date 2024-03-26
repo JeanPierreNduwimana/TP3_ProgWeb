@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\FlappyBird_WebAPI.props" />
+</Project>
