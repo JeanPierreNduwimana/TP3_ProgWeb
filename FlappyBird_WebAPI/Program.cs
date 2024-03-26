@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using FlappyBird_WebAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using FlappyBird_WebAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<FlappyBird_WebAPIContext>(options =>
@@ -11,6 +13,24 @@ builder.Services.AddDbContext<FlappyBird_WebAPIContext>(options =>
     options.UseLazyLoadingProxies();
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidAudience = "http//localhost:4200",
+        ValidIssuer = "http//localhost:7182",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Looo000ongue Phrase SinoN Ca nem arche passsAAAssssaS !"))
+    };
+});
 
 // Add services to the container.
 builder.Services.AddIdentity<User,IdentityRole>().AddEntityFrameworkStores<FlappyBird_WebAPIContext>();
