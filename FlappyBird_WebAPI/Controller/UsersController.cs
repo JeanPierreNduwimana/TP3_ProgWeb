@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlappyBird_WebAPI.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -15,6 +15,7 @@ namespace FlappyBird_WebAPI.Controller
         {
             this.userManager = userManager;
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Register(RegisterDTO register)
@@ -32,13 +33,13 @@ namespace FlappyBird_WebAPI.Controller
 
             IdentityResult identityResult = await this.userManager.CreateAsync(user, register.Password);
 
-            if (identityResult.Succeeded)
+            if (!identityResult.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new { Message = "La création de l'utilisateur a échoué" });
             }
 
-            return Ok();
+            return Ok( new {Message = "Inscription réussie! 😎"});
 
         }
 

@@ -13,5 +13,7 @@ namespace FlappyBird_WebAPI.Models
         public string Password { get; set; } = null!;
         [Required]
         public string PasswordConfirm { get; set; } = null!;
+
+        
     }
 }

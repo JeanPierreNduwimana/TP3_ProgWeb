@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FlappyBird_WebAPI.Data;
 using FlappyBird_WebAPI.Models;
 
-namespace FlappyBird_WebAPI
+namespace FlappyBird_WebAPI.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -25,10 +25,10 @@ namespace FlappyBird_WebAPI
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Score>>> GetScore()
         {
-          if (_context.Score == null)
-          {
-              return NotFound();
-          }
+            if (_context.Score == null)
+            {
+                return NotFound();
+            }
             return await _context.Score.ToListAsync();
         }
 
@@ -36,10 +36,10 @@ namespace FlappyBird_WebAPI
         [HttpGet("{id}")]
         public async Task<ActionResult<Score>> GetScore(int id)
         {
-          if (_context.Score == null)
-          {
-              return NotFound();
-          }
+            if (_context.Score == null)
+            {
+                return NotFound();
+            }
             var score = await _context.Score.FindAsync(id);
 
             if (score == null)
@@ -86,10 +86,10 @@ namespace FlappyBird_WebAPI
         [HttpPost]
         public async Task<ActionResult<Score>> PostScore(Score score)
         {
-          if (_context.Score == null)
-          {
-              return Problem("Entity set 'FlappyBird_WebAPIContext.Score'  is null.");
-          }
+            if (_context.Score == null)
+            {
+                return Problem("Entity set 'FlappyBird_WebAPIContext.Score'  is null.");
+            }
             _context.Score.Add(score);
             await _context.SaveChangesAsync();
 

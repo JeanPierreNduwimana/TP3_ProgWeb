@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FlappyBird_WebAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FlappyBird_WebAPI.Data
 {
-    public class FlappyBird_WebAPIContext : DbContext
+    public class FlappyBird_WebAPIContext : IdentityDbContext<User>
     {
         public FlappyBird_WebAPIContext (DbContextOptions<FlappyBird_WebAPIContext> options)
             : base(options)
