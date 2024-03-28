@@ -6,10 +6,12 @@ namespace FlappyBird_WebAPI.Models
     public class Score
     {
        
-        public int Id { get; set; }
-        public double Temps { get; set; }
-        public bool Visibilité { get; set; }
-        public int Score_Joueur { get; set; }
+        public int id { get; set; }
+        public string? pseudo { get; set; }
+        public string? date { get; set; }
+        public string timeInSeconds { get; set; }
+        public bool isPublic { get; set; }
+        public string scoreValue { get; set; }
         [JsonIgnore]
         public virtual User? User { get; set; }
 

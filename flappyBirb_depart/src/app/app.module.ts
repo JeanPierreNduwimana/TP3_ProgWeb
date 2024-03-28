@@ -27,7 +27,7 @@ import { Round_00Pipe } from './pipes/round_00.pipe';
     MaterialModule,
     HttpClientModule,
     RouterModule.forRoot([
-      {path:"", redirectTo:"/play", pathMatch:"full"},
+      {path:"", redirectTo:"/login", pathMatch:"full"},
       {path:"login", component:LoginComponent},
       {path:"play", component:PlayComponent},
       {path:"scores", component:ScoreComponent}

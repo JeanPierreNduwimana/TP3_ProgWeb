@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using FlappyBird_WebAPI.Data;
 
 namespace FlappyBird_WebAPI.Controller
 {
@@ -15,10 +17,12 @@ namespace FlappyBird_WebAPI.Controller
     {
         readonly UserManager<User> userManager;
 
-        public UsersController(UserManager<User> userManager)
+        public UsersController(UserManager<User> userManager, FlappyBird_WebAPIContext context)
         {
             this.userManager = userManager;
         }
+
+
         [HttpPost]
         public async Task<ActionResult> Login(LoginDTO login)
         {
@@ -33,10 +37,10 @@ namespace FlappyBird_WebAPI.Controller
                 }
 
                 authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("blablablabla blabalablablabla blabalblaa"));
+                SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Looo000ongue Phrase SinoN Ca nem arche passsAAAssssaS !"));
                 JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: "https://localhost:7128",
-                    audience:"https//localhost:4200",
+                    issuer: "http://localhost:7151",
+                    audience:"http://localhost:4200",
                     claims: authClaims,
                     expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
@@ -82,7 +86,6 @@ namespace FlappyBird_WebAPI.Controller
             return Ok( new {Message = "Inscription réussie! 😎"});
 
         }
-
 
 
 

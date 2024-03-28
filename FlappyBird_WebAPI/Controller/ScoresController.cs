@@ -7,10 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlappyBird_WebAPI.Data;
 using FlappyBird_WebAPI.Models;
+using System.Security.Claims;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlappyBird_WebAPI.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ScoresController : ControllerBase
     {
@@ -19,6 +23,38 @@ namespace FlappyBird_WebAPI.Controller
         public ScoresController(FlappyBird_WebAPIContext context)
         {
             _context = context;
+        }
+
+
+        // POST: api/Scores
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> AddScore(Score score)
+        {
+            if (score == null)
+            {
+                return BadRequest();
+            }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = await _context.Users.FindAsync(userId);
+
+            if (user != null) { score.User = user; score.pseudo = user.UserName; }
+
+            score.date = DateTime.Now.ToString();
+
+            string[] splitedtime = score.timeInSeconds.Split('.');
+
+            string formatdecimals = splitedtime[1].Substring(0, 3);
+
+            score.timeInSeconds = splitedtime[0] + "." + formatdecimals;
+            
+
+            await _context.Score.AddAsync(score);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+
         }
 
         // GET: api/Scores
@@ -55,7 +91,7 @@ namespace FlappyBird_WebAPI.Controller
         [HttpPut("{id}")]
         public async Task<IActionResult> PutScore(int id, Score score)
         {
-            if (id != score.Id)
+            if (id != score.id)
             {
                 return BadRequest();
             }
@@ -93,7 +129,7 @@ namespace FlappyBird_WebAPI.Controller
             _context.Score.Add(score);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetScore", new { id = score.Id }, score);
+            return CreatedAtAction("GetScore", new { id = score.id }, score);
         }
 
         // DELETE: api/Scores/5
@@ -118,7 +154,9 @@ namespace FlappyBird_WebAPI.Controller
 
         private bool ScoreExists(int id)
         {
-            return (_context.Score?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Score?.Any(e => e.id == id)).GetValueOrDefault();
         }
+
+        
     }
 }

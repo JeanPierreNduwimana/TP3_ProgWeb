@@ -4,6 +4,7 @@ using FlappyBird_WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlappyBird_WebAPI.Migrations
 {
     [DbContext(typeof(FlappyBird_WebAPIContext))]
-    partial class FlappyBird_WebAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20240328215301_PseudoEtDatePeutEtreNull")]
+    partial class PseudoEtDatePeutEtreNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,13 +44,11 @@ namespace FlappyBird_WebAPI.Migrations
                     b.Property<string>("pseudo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("scoreValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("scoreValue")
+                        .HasColumnType("int");
 
-                    b.Property<string>("timeInSeconds")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("timeInSeconds")
+                        .HasColumnType("float");
 
                     b.HasKey("id");
 

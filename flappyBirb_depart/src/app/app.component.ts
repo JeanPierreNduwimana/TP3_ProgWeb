@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,8 @@ import { Component } from '@angular/core';
 export class AppComponent {
   
   toggleLogout : boolean = true;
+
+  constructor(public route : Router){}
 
   logout(){
 
@@ -24,7 +27,8 @@ export class AppComponent {
 
     this.toggleLogout = !this.toggleLogout;
 
-    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
+    this.route.navigate(["/login"]);
   }
 
 }
