@@ -13,7 +13,7 @@ import { RegisterDTO } from '../models/RegisterDTO';
 export class LoginComponent implements OnInit {
 
   hide = true;
-  domain : string = "";
+  domain : string = "http://localhost:7151/";
   registerUsername : string = "";
   registerEmail : string = "";
   registerPassword : string = "";
@@ -30,7 +30,8 @@ export class LoginComponent implements OnInit {
   async login() : Promise<void>{
 
     let logindto = new LoginDTO(this.loginUsername,this.loginPassword);
-    let x = await lastValueFrom(this.http.get<LoginDTO>( this.domain + " ", logindto ));
+    let x = await lastValueFrom(this.http.post<LoginDTO>( this.domain + "api/Users/Login", logindto ));
+    console.log(x);
 
 
 
@@ -42,7 +43,9 @@ export class LoginComponent implements OnInit {
 
 
     let registerdto = new RegisterDTO(this.registerUsername,this.registerEmail,this.registerPassword,this.registerPasswordConfirm);
-    let x = await lastValueFrom(this.http.get<RegisterDTO>( this.domain + "", registerdto));
+    let x = await lastValueFrom(this.http.post<RegisterDTO>( this.domain + "api/Users/Register", registerdto));
+
+    console.log(x);
   }
 
 }

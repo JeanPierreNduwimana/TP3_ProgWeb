@@ -5,5 +5,5 @@ export class RegisterDTO{
         public Username : string,
         public Email : string,
         public Password : string,
-        public PassswordConfirm : string) {}
+        public PasswordConfirm : string) {}
 }
