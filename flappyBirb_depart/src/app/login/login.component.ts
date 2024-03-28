@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+import { LoginDTO } from '../models/LoginDTO';
+import { HttpClient } from '@angular/common/http';
+import { RegisterDTO } from '../models/RegisterDTO';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +13,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
 
   hide = true;
-
+  domain : string = "";
   registerUsername : string = "";
   registerEmail : string = "";
   registerPassword : string = "";
@@ -18,20 +22,27 @@ export class LoginComponent implements OnInit {
   loginUsername : string = "";
   loginPassword : string = "";
 
-  constructor(public route : Router) { }
+  constructor(public route : Router,public http : HttpClient) { }
 
   ngOnInit() {
   }
 
-  login(){
+  async login() : Promise<void>{
+
+    let logindto = new LoginDTO(this.loginUsername,this.loginPassword);
+    let x = await lastValueFrom(this.http.get<LoginDTO>( this.domain + " ", logindto ));
+
 
 
     // Redirection si la connexion a réussi :
-    this.route.navigate(["/play"]);
+    //this.route.navigate(["/play"]);
   }
 
-  register(){
+  async register(): Promise<void>{
 
+
+    let registerdto = new RegisterDTO(this.registerUsername,this.registerEmail,this.registerPassword,this.registerPasswordConfirm);
+    let x = await lastValueFrom(this.http.get<RegisterDTO>( this.domain + "", registerdto));
   }
 
 }
