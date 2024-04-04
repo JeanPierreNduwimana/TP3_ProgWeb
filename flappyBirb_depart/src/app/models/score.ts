@@ -5,7 +5,7 @@ export class Score{
         public pseudo : string | null,
         public date : string | null,
         public timeInSeconds : string,
-        public scoreValue : string,
+        public scoreValue : number,
         public isPublic : boolean
     ){}
 

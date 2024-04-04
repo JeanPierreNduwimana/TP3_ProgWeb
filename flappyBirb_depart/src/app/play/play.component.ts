@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Game } from './gameLogic/game';
 import { Score } from '../models/score';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, of } from 'rxjs';
 import { ScoreDTO } from '../models/ScoreDTO';
 
 @Component({
@@ -33,7 +33,21 @@ export class PlayComponent implements OnInit, OnDestroy{
     this.scoreSent = false;
   }
 
-  async sendScore(): Promise<void>{
+  verifierconncetion() : void {
+    let token = localStorage.getItem("token");
+
+    if(token == null)
+    {
+      alert("Vous n'êtes pas connecté(e)");
+    }
+    else
+    {
+      this.sendScore(token);
+    }
+    
+  }
+
+  async sendScore(token : string): Promise<void>{
     if(this.scoreSent) return;
 
     this.scoreSent = true;
@@ -42,8 +56,6 @@ export class PlayComponent implements OnInit, OnDestroy{
     // Le score est dans sessionStorage.getItem("score")
     // Le temps est dans sessionStorage.getItem("time")
     // La date sera choisie par le serveur
-
-    let token = localStorage.getItem("token");
     let httpOptions = {
       headers : new HttpHeaders({
         'Content-Type' : 'application/json',
@@ -54,15 +66,10 @@ export class PlayComponent implements OnInit, OnDestroy{
     let time = sessionStorage.getItem("time");
     
     if(scoredto != null && time != null){
-      let score = new ScoreDTO(0,time,scoredto,true);
+      let score = new ScoreDTO(0,time,+scoredto,true);
       let x = await lastValueFrom(this.http.post<ScoreDTO>( this.domain + "/api/Scores/AddScore", score, httpOptions));
       console.log(x);
     }
-    
-
-
-
-
 
   }
 

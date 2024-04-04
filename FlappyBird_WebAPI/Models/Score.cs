@@ -11,7 +11,7 @@ namespace FlappyBird_WebAPI.Models
         public string? date { get; set; }
         public string timeInSeconds { get; set; }
         public bool isPublic { get; set; }
-        public string scoreValue { get; set; }
+        public int scoreValue { get; set; }
         [JsonIgnore]
         public virtual User? User { get; set; }
 

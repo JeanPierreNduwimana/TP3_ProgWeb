@@ -69,7 +69,7 @@ export class ScoreComponent implements OnInit {
 
     let x = await lastValueFrom(this.http.put<any>( this.domain + "/api/Scores/PutScore", score));
     console.log(x);
-    this.GetScores;
+    this.GetScores();
     this.GetPublicScores();
   }
 }

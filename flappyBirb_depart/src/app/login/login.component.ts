@@ -51,9 +51,11 @@ export class LoginComponent implements OnInit {
 
 
     let registerdto = new RegisterDTO(this.registerUsername,this.registerEmail,this.registerPassword,this.registerPasswordConfirm);
-    let x = await lastValueFrom(this.http.post<RegisterDTO>( this.domain + "api/Users/Register", registerdto));
+    let x = await lastValueFrom(this.http.post<any>( this.domain + "api/Users/Register", registerdto));
 
     console.log(x);
+
+    alert(x.message);
   }
 
 }

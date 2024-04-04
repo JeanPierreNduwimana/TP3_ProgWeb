@@ -19,10 +19,12 @@ namespace FlappyBird_WebAPI.Controller
     public class ScoresController : ControllerBase
     {
         private readonly FlappyBird_WebAPIContext _context;
+        private readonly ScoreService _scoreService;
 
-        public ScoresController(FlappyBird_WebAPIContext context)
+        public ScoresController(FlappyBird_WebAPIContext context, ScoreService scoreService)
         {
             _context = context;
+            _scoreService = scoreService;
         }
 
 
@@ -39,21 +41,15 @@ namespace FlappyBird_WebAPI.Controller
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User? user = await _context.Users.FindAsync(userId);
 
-            if (user != null) { score.User = user; score.pseudo = user.UserName; }
-
-            score.date = DateTime.Now.ToString();
-
-            string[] splitedtime = score.timeInSeconds.Split('.');
-
-            string formatdecimals = splitedtime[1].Substring(0, 3);
-
-            score.timeInSeconds = splitedtime[0] + "." + formatdecimals;
-            
-
-            await _context.Score.AddAsync(score);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            if(user != null)
+            {
+                await _scoreService.AddScoreAsync(user, score);
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
 
         }
 
@@ -61,7 +57,7 @@ namespace FlappyBird_WebAPI.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Score>>> GetScore()
         {
-            if (_context.Score == null)
+            if (_scoreService.isContextNull())
             {
                 return NotFound();
             }
@@ -71,7 +67,8 @@ namespace FlappyBird_WebAPI.Controller
 
             if (user != null)
             {
-                return await _context.Score.Where(x => x.pseudo == user.UserName).OrderByDescending(x => x.scoreValue).ToListAsync();
+               // return await _context.Score.Where(x => x.pseudo == user.UserName).OrderByDescending(x => x.scoreValue).Take(10).ToListAsync();
+               return await _scoreService.GetScoreAsync(user);
             }
             else { return NotFound(); }
         }
@@ -80,33 +77,14 @@ namespace FlappyBird_WebAPI.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Score>>> GetPublicScore()
         {
-            if (_context.Score == null)
+            if (_scoreService.isContextNull())
             {
                 return NotFound();
             }
 
-                return await _context.Score.Where(x => x.isPublic == true).OrderByDescending(x => x.scoreValue).ToListAsync();
+            return await _scoreService.GetPublicScoreAsync();
             
         }
-
-        // GET: api/Scores/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Score>> GetScore(int id)
-        {
-            if (_context.Score == null)
-            {
-                return NotFound();
-            }
-            var score = await _context.Score.FindAsync(id);
-
-            if (score == null)
-            {
-                return NotFound();
-            }
-
-            return score;
-        }
-
 
         // PUT: api/Scores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -118,67 +96,59 @@ namespace FlappyBird_WebAPI.Controller
                 return BadRequest();
             }
 
-            _context.Entry(score).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ScoreExists(score.id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _scoreService.PutScoreAsync(score);
 
             return NoContent();
-        }
-
-        // POST: api/Scores
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Score>> PostScore(Score score)
-        {
-            if (_context.Score == null)
-            {
-                return Problem("Entity set 'FlappyBird_WebAPIContext.Score'  is null.");
-            }
-            _context.Score.Add(score);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetScore", new { id = score.id }, score);
-        }
-
-        // DELETE: api/Scores/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteScore(int id)
-        {
-            if (_context.Score == null)
-            {
-                return NotFound();
-            }
-            var score = await _context.Score.FindAsync(id);
-            if (score == null)
-            {
-                return NotFound();
-            }
-
-            _context.Score.Remove(score);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ScoreExists(int id)
-        {
-            return (_context.Score?.Any(e => e.id == id)).GetValueOrDefault();
         }
 
         
+
+        // GET: api/Scores/5
+
+        /*
+            [HttpGet("{id}")]
+            public async Task<ActionResult<Score>> GetScore(int id)
+            {
+                if (_scoreService.isContextNull())
+                {
+                    return NotFound();
+                }
+                var score = await _context.Score.FindAsync(id);
+
+                if (score == null)
+                {
+                    return NotFound();
+                }
+
+                return score;
+            }
+
+
+           
+
+
+            // DELETE: api/Scores/5
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> DeleteScore(int id)
+            {
+                if (_scoreService.isContextNull())
+                {
+                    return NotFound();
+                }
+                var score = await _context.Score.FindAsync(id);
+                if (score == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Score.Remove(score);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+           
+        */
+
     }
 }
