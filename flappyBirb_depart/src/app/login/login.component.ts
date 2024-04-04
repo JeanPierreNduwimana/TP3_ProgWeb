@@ -4,6 +4,7 @@ import { lastValueFrom } from 'rxjs';
 import { LoginDTO } from '../models/LoginDTO';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RegisterDTO } from '../models/RegisterDTO';
+import { FlappyService } from '../FlappyService';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,7 @@ export class LoginComponent implements OnInit {
   loginUsername : string = "";
   loginPassword : string = "";
 
-  constructor(public route : Router,public http : HttpClient) { }
+  constructor(public route : Router,public http : HttpClient,public _flappyservice : FlappyService) { }
 
   ngOnInit() {
 
@@ -31,15 +32,10 @@ export class LoginComponent implements OnInit {
   async login() : Promise<void>{
 
     let logindto = new LoginDTO(this.loginUsername,this.loginPassword);
-    let x = await lastValueFrom(this.http.post<any>( this.domain + "api/Users/Login", logindto ));
-    console.log(x);
-
-
-
+    let x = await this._flappyservice.login(logindto);
+    
     // Redirection si la connexion a réussi :
-
     let token : string | null = x.token;
-
     if(token != null){
       localStorage.setItem("token", token);
       this.route.navigate(["/play"]);
@@ -48,13 +44,8 @@ export class LoginComponent implements OnInit {
   }
 
   async register(): Promise<void>{
-
-
     let registerdto = new RegisterDTO(this.registerUsername,this.registerEmail,this.registerPassword,this.registerPasswordConfirm);
-    let x = await lastValueFrom(this.http.post<any>( this.domain + "api/Users/Register", registerdto));
-
-    console.log(x);
-
+    let x = await this._flappyservice.register(registerdto);
     alert(x.message);
   }
 

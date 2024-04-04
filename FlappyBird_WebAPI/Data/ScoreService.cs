@@ -7,6 +7,7 @@ namespace FlappyBird_WebAPI.Data
     public class ScoreService
     {
         protected readonly FlappyBird_WebAPIContext _context;
+
         public ScoreService(FlappyBird_WebAPIContext context) 
         {
             _context = context;
@@ -66,6 +67,13 @@ namespace FlappyBird_WebAPI.Data
         private bool ScoreExists(int id)
         {
             return (_context.Score?.Any(e => e.id == id)).GetValueOrDefault();
+        }
+
+        public async Task<User?> FindUserAsync(string userid)
+        {
+            User? user = await _context.Users.FindAsync(userid);
+
+            return user;
         }
 
     }

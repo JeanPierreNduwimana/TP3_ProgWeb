@@ -1,0 +1,94 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { LoginDTO } from "./models/LoginDTO";
+import { lastValueFrom } from "rxjs";
+import { RegisterDTO } from "./models/RegisterDTO";
+import { Injectable } from "@angular/core";
+import { Score } from "./models/score";
+import { ScoreDTO } from "./models/ScoreDTO";
+
+
+const domain : string = "http://localhost:7151/";
+
+@Injectable({
+    providedIn: 'root'
+  })
+  
+export class FlappyService {
+
+    constructor(public http : HttpClient){}
+
+    async login(logindto : LoginDTO) : Promise<any>
+    {
+        let x = await lastValueFrom(this.http.post<any>(domain + "api/Users/Login", logindto));
+        return x;
+    }
+
+    async register(registerdto : RegisterDTO): Promise<any>
+    {
+        let x = await lastValueFrom(this.http.post<any>( domain + "api/Users/Register", registerdto));
+        return x;
+    }
+
+    async AddScore(token : string) : Promise<void>
+    {
+        let httpOptions = {
+            headers : new HttpHeaders({
+              'Content-Type' : 'application/json',
+              'Authorization' : 'Bearer ' + token
+            })
+          };
+
+          let scoredto = (sessionStorage.getItem("score"));
+          let time = sessionStorage.getItem("time");
+          
+          if(scoredto != null && time != null)
+          {
+            let score = new ScoreDTO(0,time,+scoredto,true);
+            await lastValueFrom(this.http.post<ScoreDTO>( domain + "api/Scores/AddScore", score, httpOptions));
+          }
+    }
+
+    async GetScores() : Promise<Score[]>
+    {
+        let token = localStorage.getItem("token");
+        let httpOptions = {
+            headers : new HttpHeaders({
+              'Content-Type' : 'application/json',
+              'Authorization' : 'Bearer ' + token
+            })
+          };
+
+        let x = await lastValueFrom(this.http.get<any>( domain + "api/Scores/GetScore", httpOptions));
+
+        let listscore : Score[] = [];
+
+        for( let i =0; i < x.length; i++)
+        {
+            listscore.push(new Score(x[i].id,x[i].pseudo,x[i].date,x[i].timeInSeconds,x[i].scoreValue,x[i].isPublic));
+        }
+
+        return listscore;
+    }
+
+    async GetPublicScores() : Promise<Score[]>
+    {
+        let listscore : Score[] = [];
+
+        let x = await lastValueFrom(this.http.get<any>( domain + "api/Scores/GetPublicScore"));
+        
+        for( let i =0; i < x.length; i++)
+        {
+            listscore.push(new Score(x[i].id,x[i].pseudo,x[i].date,x[i].timeInSeconds,x[i].scoreValue,x[i].isPublic));
+        }
+
+        return listscore;
+    }
+
+    async PutScore(score : Score) : Promise<void>
+    {
+        await lastValueFrom(this.http.put<any>( domain + "api/Scores/PutScore", score));
+    }
+
+    
+
+}

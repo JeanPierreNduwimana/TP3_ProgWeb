@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FlappyBird_WebAPI.Data;
 using FlappyBird_WebAPI.Models;
 using System.Security.Claims;
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FlappyBird_WebAPI.Controller
@@ -18,12 +11,10 @@ namespace FlappyBird_WebAPI.Controller
     [ApiController]
     public class ScoresController : ControllerBase
     {
-        private readonly FlappyBird_WebAPIContext _context;
         private readonly ScoreService _scoreService;
 
-        public ScoresController(FlappyBird_WebAPIContext context, ScoreService scoreService)
+        public ScoresController(ScoreService scoreService)
         {
-            _context = context;
             _scoreService = scoreService;
         }
 
@@ -39,7 +30,7 @@ namespace FlappyBird_WebAPI.Controller
             }
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            User? user = await _context.Users.FindAsync(userId);
+            User? user = await _scoreService.FindUserAsync(userId);
 
             if(user != null)
             {
@@ -63,11 +54,10 @@ namespace FlappyBird_WebAPI.Controller
             }
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            User? user = await _context.Users.FindAsync(userId);
+            User? user = await _scoreService.FindUserAsync(userId);
 
             if (user != null)
             {
-               // return await _context.Score.Where(x => x.pseudo == user.UserName).OrderByDescending(x => x.scoreValue).Take(10).ToListAsync();
                return await _scoreService.GetScoreAsync(user);
             }
             else { return NotFound(); }
