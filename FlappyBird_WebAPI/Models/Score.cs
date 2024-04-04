@@ -13,7 +13,7 @@ namespace FlappyBird_WebAPI.Models
         public bool isPublic { get; set; }
         public int scoreValue { get; set; }
         [JsonIgnore]
-        public virtual User? User { get; set; }
+        public virtual User? _user { get; set; }
 
 
 

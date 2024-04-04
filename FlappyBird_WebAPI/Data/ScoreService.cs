@@ -15,7 +15,7 @@ namespace FlappyBird_WebAPI.Data
 
         public async Task AddScoreAsync(User user, Score score)
         {
-            score.User = user;
+            score._user = user;
             score.pseudo = user.UserName;
             score.date = DateTime.Now.ToString();
             string[] splitedtime = score.timeInSeconds.Split('.');

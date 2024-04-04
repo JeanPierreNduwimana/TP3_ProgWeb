@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using FlappyBird_WebAPI.Data;
 
 namespace FlappyBird_WebAPI.Controller
@@ -17,7 +16,7 @@ namespace FlappyBird_WebAPI.Controller
     {
         readonly UserManager<User> userManager;
 
-        public UsersController(UserManager<User> userManager, FlappyBird_WebAPIContext context)
+        public UsersController(UserManager<User> userManager)
         {
             this.userManager = userManager;
         }

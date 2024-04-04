@@ -29,36 +29,21 @@ export class FlappyService {
         return x;
     }
 
-    async AddScore(token : string) : Promise<void>
+    async AddScore() : Promise<void>
     {
-        let httpOptions = {
-            headers : new HttpHeaders({
-              'Content-Type' : 'application/json',
-              'Authorization' : 'Bearer ' + token
-            })
-          };
-
           let scoredto = (sessionStorage.getItem("score"));
           let time = sessionStorage.getItem("time");
           
           if(scoredto != null && time != null)
           {
             let score = new ScoreDTO(0,time,+scoredto,true);
-            await lastValueFrom(this.http.post<ScoreDTO>( domain + "api/Scores/AddScore", score, httpOptions));
+            await lastValueFrom(this.http.post<ScoreDTO>( domain + "api/Scores/AddScore", score));
           }
     }
 
     async GetScores() : Promise<Score[]>
     {
-        let token = localStorage.getItem("token");
-        let httpOptions = {
-            headers : new HttpHeaders({
-              'Content-Type' : 'application/json',
-              'Authorization' : 'Bearer ' + token
-            })
-          };
-
-        let x = await lastValueFrom(this.http.get<any>( domain + "api/Scores/GetScore", httpOptions));
+        let x = await lastValueFrom(this.http.get<any>( domain + "api/Scores/GetScore"));
 
         let listscore : Score[] = [];
 
@@ -88,7 +73,4 @@ export class FlappyService {
     {
         await lastValueFrom(this.http.put<any>( domain + "api/Scores/PutScore", score));
     }
-
-    
-
 }

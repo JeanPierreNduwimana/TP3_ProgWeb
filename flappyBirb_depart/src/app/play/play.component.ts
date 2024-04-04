@@ -43,15 +43,15 @@ export class PlayComponent implements OnInit, OnDestroy{
     }
     else
     {
-      this.sendScore(token);
+      this.sendScore();
     }
     
   }
 
-  async sendScore(token : string): Promise<void>{
+  async sendScore(): Promise<void>{
     if(this.scoreSent) return;
     this.scoreSent = true;
-    await this._flappyService.AddScore(token);
+    await this._flappyService.AddScore();
   }
 
 }

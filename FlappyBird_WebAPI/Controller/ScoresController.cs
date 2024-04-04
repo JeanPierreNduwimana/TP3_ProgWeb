@@ -4,6 +4,7 @@ using FlappyBird_WebAPI.Data;
 using FlappyBird_WebAPI.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace FlappyBird_WebAPI.Controller
 {
@@ -39,7 +40,7 @@ namespace FlappyBird_WebAPI.Controller
             }
             else
             {
-                return NotFound();
+                return NotFound(new {Message = "Aucun utilisateur connecté(e)"} );
             }
 
         }
@@ -60,7 +61,7 @@ namespace FlappyBird_WebAPI.Controller
             {
                return await _scoreService.GetScoreAsync(user);
             }
-            else { return NotFound(); }
+            else { return NotFound(new  {Message = "Il faut se connecter pour accèder au scores privés." }); }
         }
 
         // GET: api/Scores
@@ -86,59 +87,18 @@ namespace FlappyBird_WebAPI.Controller
                 return BadRequest();
             }
 
-            await _scoreService.PutScoreAsync(score);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = await _scoreService.FindUserAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = "Il faut se connecter pour modifer les scores privés." });
+            }
+
+                await _scoreService.PutScoreAsync(score);
 
             return NoContent();
         }
-
-        
-
-        // GET: api/Scores/5
-
-        /*
-            [HttpGet("{id}")]
-            public async Task<ActionResult<Score>> GetScore(int id)
-            {
-                if (_scoreService.isContextNull())
-                {
-                    return NotFound();
-                }
-                var score = await _context.Score.FindAsync(id);
-
-                if (score == null)
-                {
-                    return NotFound();
-                }
-
-                return score;
-            }
-
-
-           
-
-
-            // DELETE: api/Scores/5
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteScore(int id)
-            {
-                if (_scoreService.isContextNull())
-                {
-                    return NotFound();
-                }
-                var score = await _context.Score.FindAsync(id);
-                if (score == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Score.Remove(score);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
-            }
-
-           
-        */
 
     }
 }
