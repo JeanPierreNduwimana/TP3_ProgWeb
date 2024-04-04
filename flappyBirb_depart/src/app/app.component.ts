@@ -12,6 +12,8 @@ export class AppComponent {
 
   constructor(public route : Router){}
 
+
+
   logout(){
 
     // ██ Supprimer le token juste ici ! ██
@@ -25,7 +27,7 @@ export class AppComponent {
     logoutBox.style.opacity = this.toggleLogout ? "1" : "0";
     logoutBox.style.top = this.toggleLogout ? "50%" : "48%";
 
-    this.toggleLogout = !this.toggleLogout;
+    this.toggleLogout = false;
 
     localStorage.removeItem("token");
     this.route.navigate(["/login"]);

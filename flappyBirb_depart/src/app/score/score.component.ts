@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Score } from '../models/score';
 import { lastValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-score',
@@ -21,29 +22,54 @@ export class ScoreComponent implements OnInit {
   async ngOnInit() {
 
     this.userIsConnected = localStorage.getItem("token") != null;
-    this.GetScores();
 
-
-  }
-
-  async GetScores() : Promise<void>{
-
-    let x = await lastValueFrom(this.http.get<any>( this.domain + "/api/Scores/GetScore"));
-    console.log(x);
-
-    for( let i =0; i < x.length; i++){
-      this.myScores.push(new Score(x[i].id,x[i].pseudo,x[i].date,x[i].timeInSeconds,x[i].scoreValue,x[i].isPublic));
+    if(this.userIsConnected)
+    {
+      this.GetScores();
     }
-  
-    console.log(this.myScores);
-  
-    console.log(this.userIsConnected);
+
+    this.GetPublicScores();
+    
     
   }
 
-  async changeScoreVisibility(score : Score){
+  async GetScores() : Promise<void>{
+    this.myScores = [];
 
+    let token = localStorage.getItem("token");
+    let httpOptions = {
+      headers : new HttpHeaders({
+        'Content-Type' : 'application/json',
+        'Authorization' : 'Bearer ' + token
+      })
+    };
 
+    let x = await lastValueFrom(this.http.get<any>( this.domain + "/api/Scores/GetScore", httpOptions));
+    for( let i =0; i < x.length; i++)
+    {
+      this.myScores.push(new Score(x[i].id,x[i].pseudo,x[i].date,x[i].timeInSeconds,x[i].scoreValue,x[i].isPublic));
+    }
   }
 
+  async GetPublicScores() : Promise<void>{
+
+    this.publicScores = [];
+    let x = await lastValueFrom(this.http.get<any>( this.domain + "/api/Scores/GetPublicScore"));
+    console.log(x);
+
+    for( let i =0; i < x.length; i++){
+      this.publicScores.push(new Score(x[i].id,x[i].pseudo,x[i].date,x[i].timeInSeconds,x[i].scoreValue,x[i].isPublic));
+    }
+    
+  }
+
+  async changeScoreVisibility(score : Score) : Promise<void>{
+    if(score.isPublic) {score.isPublic = false;}
+    else { score.isPublic = true;}
+
+    let x = await lastValueFrom(this.http.put<any>( this.domain + "/api/Scores/PutScore", score));
+    console.log(x);
+    this.GetScores;
+    this.GetPublicScores();
+  }
 }

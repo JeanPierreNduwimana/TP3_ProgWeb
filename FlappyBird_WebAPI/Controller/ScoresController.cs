@@ -65,7 +65,28 @@ namespace FlappyBird_WebAPI.Controller
             {
                 return NotFound();
             }
-            return await _context.Score.ToListAsync();
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = await _context.Users.FindAsync(userId);
+
+            if (user != null)
+            {
+                return await _context.Score.Where(x => x.pseudo == user.UserName).OrderByDescending(x => x.scoreValue).ToListAsync();
+            }
+            else { return NotFound(); }
+        }
+
+        // GET: api/Scores
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Score>>> GetPublicScore()
+        {
+            if (_context.Score == null)
+            {
+                return NotFound();
+            }
+
+                return await _context.Score.Where(x => x.isPublic == true).OrderByDescending(x => x.scoreValue).ToListAsync();
+            
         }
 
         // GET: api/Scores/5
@@ -86,12 +107,13 @@ namespace FlappyBird_WebAPI.Controller
             return score;
         }
 
+
         // PUT: api/Scores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutScore(int id, Score score)
+        [HttpPut]
+        public async Task<IActionResult> PutScore(Score score)
         {
-            if (id != score.id)
+            if (score == null)
             {
                 return BadRequest();
             }
@@ -104,7 +126,7 @@ namespace FlappyBird_WebAPI.Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ScoreExists(id))
+                if (!ScoreExists(score.id))
                 {
                     return NotFound();
                 }
