@@ -40,13 +40,30 @@ export class LoginComponent implements OnInit {
       localStorage.setItem("token", token);
       this.route.navigate(["/play"]);
     }
+
+    if(x.message != "" && x.message != null)
+    {
+      alert(x.message);
+    } else {
+      alert(x);
+    }
     
   }
 
   async register(): Promise<void>{
     let registerdto = new RegisterDTO(this.registerUsername,this.registerEmail,this.registerPassword,this.registerPasswordConfirm);
     let x = await this._flappyservice.register(registerdto);
-    alert(x.message);
+
+    if(x.message != "" && x.message != null)
+    {
+      alert(x.message);
+    } else {
+      alert(x);
+    }
+
+    
+    
+    
   }
 
 }

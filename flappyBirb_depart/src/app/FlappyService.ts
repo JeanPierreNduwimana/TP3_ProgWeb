@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { LoginDTO } from "./models/LoginDTO";
 import { lastValueFrom } from "rxjs";
 import { RegisterDTO } from "./models/RegisterDTO";
@@ -19,13 +19,40 @@ export class FlappyService {
 
     async login(logindto : LoginDTO) : Promise<any>
     {
-        let x = await lastValueFrom(this.http.post<any>(domain + "api/Users/Login", logindto));
+        let messageerror : string = "";
+        let x = await lastValueFrom(this.http.post<any>(domain + "api/Users/Login", logindto)).catch((error: HttpErrorResponse) => {
+            messageerror = error.error.text;
+            if(error.error.text == null) {
+                messageerror = error.error.title;
+            }
+            if(error.error.title == null) {
+                messageerror = error.error.message;
+            }
+          });
+          if(x == "" || x == null)
+          {
+            x = messageerror;
+          }
         return x;
     }
 
     async register(registerdto : RegisterDTO): Promise<any>
     {
-        let x = await lastValueFrom(this.http.post<any>( domain + "api/Users/Register", registerdto));
+        let messageerror : string = "";
+        let x = await lastValueFrom(this.http.post<any>( domain + "api/Users/Register", registerdto)).catch((error: HttpErrorResponse) => {
+            messageerror = error.error.text;
+            if(error.error.text == null) {
+                messageerror = error.error.title;
+            }
+            if(error.error.title == null) {
+                messageerror = error.error.message;
+            }
+          });
+
+          if(x == "" || x == null)
+          {
+            x = messageerror;
+          }
         return x;
     }
 

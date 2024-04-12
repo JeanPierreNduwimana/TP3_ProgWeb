@@ -1,12 +1,10 @@
 ﻿using FlappyBird_WebAPI.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FlappyBird_WebAPI.Data;
 
 namespace FlappyBird_WebAPI.Controller
 {
@@ -44,11 +42,13 @@ namespace FlappyBird_WebAPI.Controller
                     expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
                     );
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    validTo = token.ValidTo
-                });
+                return Ok(
+                    new 
+                    {
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        validTo = token.ValidTo,
+                        Message = "Connexion reussie! 😎" 
+                    });
 
             }
             else
@@ -63,9 +63,17 @@ namespace FlappyBird_WebAPI.Controller
         [HttpPost]
         public async Task<ActionResult> Register(RegisterDTO register)
         {
-            if(register.Password != register.PasswordConfirm) 
+
+            User userExist = await userManager.FindByNameAsync(register.Username);
+
+            if(userExist != null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = "Mot de passe non-identiques!" });
+                return BadRequest(new { Message = "Le nom de l'utilisateur existe déjà" });
+            }
+
+            if (register.Password != register.PasswordConfirm) 
+            {
+                return BadRequest(new { Message = "Mot de passe non-identiques!" });
             }
 
             User user = new User()
@@ -78,8 +86,8 @@ namespace FlappyBird_WebAPI.Controller
 
             if (!identityResult.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new { Message = "La création de l'utilisateur a échoué" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erreur inattendue." });
+                
             }
 
             return Ok( new {Message = "Inscription réussie! 😎"});
